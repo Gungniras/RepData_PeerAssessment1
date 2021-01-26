@@ -22,7 +22,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 ```
 
 ```
@@ -33,7 +33,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```
@@ -75,6 +75,38 @@ The mean total number of steps taken per day is: 10766 and the median total numb
 ## What is the average daily activity pattern?
 
 
+```r
+dat2 <- dat
+
+datgrouped2 <- dat2 %>%
+  group_by(interval)
+
+
+  avg2 <- datgrouped2 %>% summarise(
+    mean_steps = mean(steps, na.rm = TRUE)
+  )
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+p <- ggplot(avg2, aes(x=interval, y=mean_steps)) +
+        geom_line(color="#69b3a2") + 
+        xlab("") +
+        ylab("Average number of steps per invervall")
+        p
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
+max <- avg2 %>% filter(mean_steps == max(mean_steps))
+max1 <- max[[1]]
+```
+
+The 5 minute interval with the the most steps on average across all the days in the data set is: 835
 
 ## Imputing missing values
 
