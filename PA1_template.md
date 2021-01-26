@@ -111,5 +111,61 @@ The 5 minute interval with the the most steps on average across all the days in 
 ## Imputing missing values
 
 
+```r
+#total number of missing values
+
+mis <- is.na(dat$steps)
+mis2 <- sum(mis)
+
+#impute values
+
+dat3 <- merge(avg2, dat, )
+
+dat3 <- merge(dat, avg2, 
+                  by.x = "interval", 
+                  by.y = "interval", all = FALSE)
+
+#new data set with imputed values
+dat3$steps <- ifelse(is.na(dat3$steps), dat3$mean_steps, dat3$steps)
+
+
+#plot 
+dat3$date <- as.Date(dat3$date)
+
+datgroupedIM <- dat3 %>%
+  group_by(date)
+
+
+  summIM <- datgroupedIM %>% summarise(
+    summIM = sum(steps)
+  )
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+  colnames(summIM) <- c("date", "total number steps")
+  
+  plot3 <- ggplot(summIM, aes(`total number steps`)) + 
+  geom_histogram(binwidth = 500) 
+  plot3
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
+ avgImp <- as.integer(mean(summIM$`total number steps`))
+ meImp <- as.integer(median(summIM$`total number steps`))
+```
+
+The total number of missing values in the data set is: 2304
+
+The strategy to impute missing values will be to replace them with the global average of the same interval.
+
+After imputing the mean total number of steps taken per day is: 10766 and the median total number of steps taken per day is: 10766. The mean values as unaffected, the median values changed from 10765 to 10766
+
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
