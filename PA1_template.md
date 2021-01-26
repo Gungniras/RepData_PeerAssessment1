@@ -10,19 +10,11 @@ output:
 
 
 ```r
-dat <- read.csv("activity.csv")
-```
-
-
-## What is mean total number of steps taken per day?
-
-
-```r
 library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 ```
 
 ```
@@ -33,10 +25,21 @@ library(tidyverse)
 ```
 
 ```
-## ── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```
+
+```r
+library(ggpubr)
+
+
+dat <- read.csv("activity.csv")
+```
+
+
+## What is mean total number of steps taken per day?
+
 
 ```r
 datgrouped <- dat %>%
@@ -164,8 +167,74 @@ The total number of missing values in the data set is: 2304
 
 The strategy to impute missing values will be to replace them with the global average of the same interval.
 
-After imputing the mean total number of steps taken per day is: 10766 and the median total number of steps taken per day is: 10766. The mean values as unaffected, the median values changed from 10765 to 10766
+After imputing the mean total number of steps taken per day is: 10766 and the median total number of steps taken per day is: 10766. The mean values as unaffected, the median value changed from 10765 to 10766
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+
+```r
+dat4 <- dat3
+
+dat4 <- dat4 %>% 
+        mutate(date = weekdays(date))
+
+Weekend <- filter(dat4, date == "Sunday" | date == "Saturday")
+Workdays <- filter(dat4, date == "Monday" | date == "Tuesday" | date == "Wednesday"| date == "Thursday" | date == "Friday")
+
+Wendgrouped <- Weekend %>%
+  group_by(interval)
+
+Wendavg <- Wendgrouped %>% summarise(
+    mean_steps = mean(steps, na.rm = TRUE)
+  )
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+Workgrouped <- Workdays %>%
+  group_by(interval)
+
+Workavg <- Workgrouped %>% summarise(
+    mean_steps = mean(steps, na.rm = TRUE)
+  )
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
+plot4 <- ggplot(Wendavg, aes(x=interval, y=mean_steps)) +
+        geom_line(color="#69b3a2") + 
+        xlab("") +
+        ylab("Number of steps") +
+        labs(title = "Weekend")
+        
+
+
+plot5 <- ggplot(Workavg, aes(x=interval, y=mean_steps)) +
+        geom_line(color="#69b3a2") + 
+        xlab("") +
+        ylab("Number of steps") +
+        labs(title = "Week days")
+
+
+
+
+figure <- ggarrange(plot4, plot5,
+                    labels = c("A", "B"),
+                    ncol = 1, nrow = 2)
+figure
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+
+
+
